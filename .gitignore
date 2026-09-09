@@ -1,0 +1,16 @@
+node_modules/
+dist/
+dist-electron/
+build_v2/
+build_v3/
+release/
+JV-Translator-App/
+*.exe
+*.zip
+*.bat
+scratch/
+temp_*
+test_*
+.env
+.env.local
+.DS_Store

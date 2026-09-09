@@ -1,0 +1,16 @@
+{
+  "name": "日越英 高精度AI翻訳",
+  "short_name": "日越翻訳",
+  "description": "ビジネス・日常会話対応の日越英相互高精度AI翻訳",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
