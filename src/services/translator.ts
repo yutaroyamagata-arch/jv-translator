@@ -450,7 +450,7 @@ export async function executeGeminiTranslation(
   signal?: AbortSignal
 ): Promise<TranslationResult> {
   let initialModel = settings.model || 'gemini-3.5-flash';
-  if (initialModel === 'gemini-2.5-flash' || initialModel === 'gemini-2.0-flash' || initialModel === 'gemini-1.5-flash') {
+  if (initialModel === 'gemini-2.5-flash' || initialModel === 'gemini-2.0-flash' || initialModel === 'gemini-1.5-flash' || initialModel === 'gemini-3.6-flash') {
     initialModel = 'gemini-3.5-flash';
   }
 
@@ -601,7 +601,6 @@ ${sourceText}`;
     'gemini-3.7-flash',
     'gemini-flash-latest',
     'gemini-flash-lite-latest',
-    'gemini-3.6-flash',
   ].filter((m, idx, arr) => arr.indexOf(m) === idx);
 
   let accumulatedRawText = '';

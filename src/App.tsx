@@ -50,7 +50,7 @@ export const App: React.FC = () => {
         if (!parsed.geminiApiKey && envKey) {
           parsed.geminiApiKey = envKey;
         }
-        if (!parsed.model || parsed.model.includes('2.0') || parsed.model.includes('1.5') || parsed.model.includes('2.5')) {
+        if (!parsed.model || parsed.model.includes('2.0') || parsed.model.includes('1.5') || parsed.model.includes('2.5') || parsed.model === 'gemini-3.6-flash') {
           parsed.model = 'gemini-3.5-flash';
         }
         return { ...DEFAULT_SETTINGS, ...parsed };
