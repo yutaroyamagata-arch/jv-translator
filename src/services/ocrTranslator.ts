@@ -29,11 +29,10 @@ export async function executeOcrTranslation(
   }
 
   const candidateModels = [
-    settings.model || 'gemini-3.5-flash-lite',
-    'gemini-3.5-flash-lite',
-    'gemini-flash-lite-latest',
-    'gemini-3.1-flash-lite',
+    settings.model || 'gemini-3.6-flash',
     'gemini-3.6-flash',
+    'gemini-3.5-flash',
+    'gemini-3.5-flash-lite',
   ].filter((m, idx, arr) => arr.indexOf(m) === idx);
 
   const prompt = `You are a world-class multimodal OCR and translation system for Japanese, Vietnamese, and English.

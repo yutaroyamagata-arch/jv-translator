@@ -449,9 +449,9 @@ export async function executeGeminiTranslation(
   onProgress?: (partial: TranslationResult) => void,
   signal?: AbortSignal
 ): Promise<TranslationResult> {
-  let initialModel = settings.model || 'gemini-3.5-flash-lite';
-  if (initialModel === 'gemini-2.5-flash' || initialModel === 'gemini-2.0-flash' || initialModel === 'gemini-1.5-flash') {
-    initialModel = 'gemini-3.5-flash-lite';
+  let initialModel = settings.model || 'gemini-3.6-flash';
+  if (initialModel === 'gemini-2.5-flash' || initialModel === 'gemini-2.0-flash' || initialModel === 'gemini-1.5-flash' || initialModel === 'gemini-3.5-flash-lite') {
+    initialModel = 'gemini-3.6-flash';
   }
 
   const apiKey = settings.geminiApiKey.trim();
@@ -480,26 +480,27 @@ CRITICAL FORMATTING MANDATE:
   if (sourceLang === 'ja') {
     tag1 = '<<<ENGLISH>>>';
     tag2 = '<<<VIETNAMESE>>>';
-    promptText = `You are an expert professional translator specializing in Japanese-Vietnamese and Japanese-English translation.
-Task: Translate the Japanese source text faithfully, accurately, and naturally into Vietnamese and English.
+    promptText = `You are an elite, top-tier Japanese-Vietnamese-English translation specialist with native-level mastery of Japanese business etiquette and contemporary Vietnamese professional and colloquial registers.
+
+MISSION: Produce the most accurate, natural, and contextually nuanced translation possible, completely free of literal translation awkwardness or machine-translation artifacts.
 
 CRITICAL TRANSLATION PRINCIPLES:
-1. Pure, Faithful Translation (忠実翻訳):
-   - Translate ONLY the meaning, intent, and nuance of the provided source text.
-   - Strictly DO NOT invent greetings, email openers, or polite prefaces (such as "Dạ em chào anh/chị ạ", "Dạ thưa...", "Em xin cảm ơn...") unless they are explicitly present in the Japanese text.
-   - Accurately preserve the speaker's tone and stance:
-     * If the source is an instruction or deadline notification, translate it as a clear, polite instruction. Do NOT twist it into a subordinate begging a boss.
-     * If the source is a question, translate it as a direct, polite question.
+1. Deep Context & Omitted Element Restoration (文脈推論・主語目的語の補完):
+   - Japanese regularly omits subjects, topics, and objects. Deeply analyze the sentence to restore the exact logical subjects (e.g. "私ども/弊社", "貴社/お客様/相手方") so the Vietnamese translation has crystal-clear, natural SVO structure.
+   - Accurately preserve the speaker's true stance:
+     * Business communication to clients/partners: Use polite, respectful terms (e.g. "Quý anh/chị / Quý công ty", "kính mong", "xin vui lòng").
+     * Instructions from manager/superior (e.g. "〜を完了させてください。不明点は相談するように"): Translate as a clear, firm, polite directive, NOT as an apologetic plea.
+     * Questions: Translate as clear, direct inquiries.
 2. Strict Pronoun Mandate (人称代名詞・我々/私たち/弊社の厳密な区別):
    - "我々" / "私たち":
      * When referring to the shared team, collaboration, both parties, or mutual goals (inclusive "we"): Translate STRICTLY as "chúng ta" or "chúng mình" (e.g. "我々は協力しましょう" -> "Chúng ta hãy cùng hợp tác").
      * Only translate as "chúng tôi" when explicitly contrasting the speaker's own company against the client or external party.
    - "弊社" / "当社" / "私ども": Translate as "chúng tôi" or "công ty chúng tôi".
 3. Natural, Context-Accurate Vietnamese (under <<<VIETNAMESE>>>):
-   - Use correct, natural Vietnamese vocabulary and grammar.
-   - Accurately translate business terms in context (e.g. "納期に遅れない" -> "không để bị trễ hạn / tiến độ"; never translate as "đến muộn").
+   - Use correct, contemporary, natural Vietnamese vocabulary and grammar.
+   - Accurately translate business terms in context (e.g. "納期に遅れない" -> "không để bị trễ hạn / tiến độ"; "検討" -> "xem xét / thảo luận nội bộ"; "ご一読" -> "xem qua / tham khảo").
 4. Clear, Natural English (under <<<ENGLISH>>>):
-   - Output natural English matching the source intent.
+   - Output natural, fluent professional English matching international business standards.
 ${formattingRule}
 ${tonePrompt}
 
@@ -515,30 +516,27 @@ ${sourceText}`;
     tag1 = '<<<ENGLISH>>>';
     tag2 = '<<<JAPANESE>>>';
     const teencodeCheck = detectTeencode(sourceText);
-    promptText = `You are an expert professional translator specializing in Vietnamese-Japanese and Vietnamese-English translation.
-Task: Translate the Vietnamese source text faithfully, accurately, and naturally into Japanese and English.
+    promptText = `You are an elite, top-tier Vietnamese-Japanese-English translation specialist with native-level mastery of Vietnamese idioms, kinship pronouns, chat conventions, and Japanese business Keigo.
+
+MISSION: Produce the most accurate, natural, and contextually nuanced translation possible, completely free of literal translation awkwardness or machine-translation artifacts.
 
 CRITICAL TRANSLATION PRINCIPLES:
 1. Pure, Faithful Translation (忠実翻訳):
    - Translate ONLY the meaning, nuance, and intent of the provided source text.
-   - Strictly DO NOT invent fabricated greetings, exaggerated apologies, or subservient prefaces that alter the original meaning.
-   - Accurately preserve the speaker's perspective and role:
-     * "sản phẩm này" means "この商品" (never translate as "当商品" unless the speaker explicitly states they are the seller/maker).
-     * "tài liệu này thiếu thông tin..." means "この書類には...が不足しています".
-2. Strict Pronoun Mandate (人称代名詞の厳格な区別 - 「Chúng ta」vs「Chúng tôi」):
+   - Accurately preserve the speaker's perspective, role, and true stance.
+2. Kinship & Strict Pronoun Mandate (人称代名詞の厳格な区別 - 「Chúng ta」vs「Chúng tôi」):
+   - In Vietnamese, "anh", "chị", "em", "sếp", "bạn", "mình" indicate relative age, hierarchy, or intimacy. Translate them into context-appropriate Japanese without literal translations like "兄/姉/弟/妹/ボス".
    - "Chúng ta" / "Chúng mình" (INCLUSIVE "we" = Speaker + Listener, all of us):
      * MUST translate as "私たち", "我々", or "双方".
      * ABSOLUTE RULE: STRICTLY NEVER translate "Chúng ta" as "弊社" (our company) or "当方"! "Chúng ta" includes the person being spoken to, whereas "弊社" excludes them.
    - "Chúng tôi" (EXCLUSIVE "we" = Speaker's company/associates excluding the listener):
      * Translate as "弊社", "当方", or "私ども".
-   - General pronouns ("anh", "chị", "em", "sếp", "bạn", "mình"):
-     * Translate into natural Japanese without literal translations like "兄/姉/弟/妹/ボス".
-3. Chat Abbreviations / Teencode Resolution:
-   - If the Vietnamese text contains chat slang or informal abbreviations (e.g. ko, dc/đc, ib, rep, ntn, bjo, cv, mn, wfh, dl, ot), decipher their intended meaning accurately.
+3. Chat Slang & Teencode Resolution:
+   - If the Vietnamese text contains chat slang or informal abbreviations (e.g. ko, dc/đc, ib, rep, ntn, bjo, cv, mn, wfh, dl, ot), decipher their intended meaning accurately into natural Japanese matching the intended tone.
 4. Natural, Fluent Japanese (under <<<JAPANESE>>>):
-   - Output clean, natural Japanese with the appropriate level of politeness (丁寧語/です・ます for standard business text, 敬語 for requests, conversational for casual chat).
+   - Output clean, natural Japanese with the appropriate level of politeness (丁寧語/です・ます for standard business text, 敬語 for requests/reports, conversational for casual chat).
 5. Clear, Natural English (under <<<ENGLISH>>>):
-   - Output natural, professional English matching the source intent.
+   - Output natural, professional English matching international business standards.
 ${formattingRule}
 ${tonePrompt}
 
@@ -583,10 +581,10 @@ ${sourceText}`;
 
   const candidateModels = [
     initialModel,
+    'gemini-3.6-flash',
+    'gemini-3.5-flash',
     'gemini-3.5-flash-lite',
     'gemini-flash-lite-latest',
-    'gemini-3.1-flash-lite',
-    'gemini-3.6-flash',
     'gemini-flash-latest',
   ].filter((m, idx, arr) => arr.indexOf(m) === idx);
 

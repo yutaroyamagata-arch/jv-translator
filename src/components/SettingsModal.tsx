@@ -23,7 +23,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [model, setModel] = useState(
     settings.model && !settings.model.includes('2.0') && !settings.model.includes('1.5') && !settings.model.includes('2.5')
       ? settings.model
-      : 'gemini-3.5-flash-lite'
+      : 'gemini-3.6-flash'
   );
   const [adminPassword, setAdminPassword] = useState(settings.adminPassword || 'admin');
   const [showAdminPassword, setShowAdminPassword] = useState(false);
@@ -150,10 +150,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onChange={(e) => setModel(e.target.value)}
               className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white font-medium"
             >
-              <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash Lite (推奨・最高精度＆超高速 / Khuyên dùng)</option>
-              <option value="gemini-flash-lite-latest">Gemini Flash Lite 最新版 (Tự động cập nhật)</option>
-              <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite (Ổn định)</option>
-              <option value="gemini-3.6-flash">Gemini 3.6 Flash (Tiêu chuẩn)</option>
+              <option value="gemini-3.6-flash">Gemini 3.6 Flash (無料枠・最高精度フラッグシップ / Đỉnh cao chính xác)</option>
+              <option value="gemini-3.5-flash">Gemini 3.5 Flash (高精度・安定版 / Độ chính xác cao)</option>
+              <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash Lite (超高速・軽量版 / Siêu tốc độ)</option>
             </select>
           </div>
 
