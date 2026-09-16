@@ -32,7 +32,7 @@ import { executeOcrTranslation } from './services/ocrTranslator';
 const DEFAULT_SETTINGS: AppSettings = {
   geminiApiKey: (import.meta as any).env?.VITE_GEMINI_API_KEY || '',
   tone: 'business',
-  model: 'gemini-3.6-flash',
+  model: 'gemini-3.5-flash',
   adminPassword: 'admin',
   hideSettingsButton: true,
 };
@@ -50,8 +50,8 @@ export const App: React.FC = () => {
         if (!parsed.geminiApiKey && envKey) {
           parsed.geminiApiKey = envKey;
         }
-        if (!parsed.model || parsed.model.includes('2.0') || parsed.model.includes('1.5') || parsed.model.includes('2.5') || parsed.model === 'gemini-3.5-flash-lite') {
-          parsed.model = 'gemini-3.6-flash';
+        if (!parsed.model || parsed.model.includes('2.0') || parsed.model.includes('1.5') || parsed.model.includes('2.5')) {
+          parsed.model = 'gemini-3.5-flash';
         }
         return { ...DEFAULT_SETTINGS, ...parsed };
       }
