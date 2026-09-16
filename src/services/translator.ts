@@ -611,13 +611,16 @@ ${sourceText}`;
     if (signal?.aborted) return Promise.reject(new DOMException('Aborted', 'AbortError'));
 
     const streamEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:streamGenerateContent?key=${apiKey}&alt=sse`;
+    const modelTimeoutController = new AbortController();
+    const timeoutId = setTimeout(() => modelTimeoutController.abort(), 8000);
+    const combinedSignal = signal ? AbortSignal.any([signal, modelTimeoutController.signal]) : modelTimeoutController.signal;
 
     try {
       const response = await fetch(streamEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
-        signal,
+        signal: combinedSignal,
       });
 
       if (response.ok && response.body) {
@@ -628,6 +631,7 @@ ${sourceText}`;
         while (true) {
           if (signal?.aborted) {
             reader.cancel();
+            clearTimeout(timeoutId);
             return Promise.reject(new DOMException('Aborted', 'AbortError'));
           }
 
@@ -665,9 +669,11 @@ ${sourceText}`;
           }
         }
 
+        clearTimeout(timeoutId);
         success = true;
         break;
       } else {
+        clearTimeout(timeoutId);
         const errJson = await response.json().catch(() => null);
         const errMsg = errJson?.error?.message || response.statusText;
         lastErrorDetail = errMsg;
@@ -675,7 +681,9 @@ ${sourceText}`;
         continue;
       }
     } catch (netErr: any) {
-      if (netErr.name === 'AbortError') throw netErr;
+      clearTimeout(timeoutId);
+      if (signal?.aborted) throw netErr;
+      console.warn(`Model ${currentModel} attempt aborted or failed (${netErr.message}), trying next candidate model in pool...`);
       lastErrorDetail = netErr.message || 'ネットワークエラー';
     }
   }
@@ -718,6 +726,9 @@ function buildResultObject(
   durationMs: number
 ): TranslationResult {
   const id = `trans_${Date.now()}`;
+  const part1Clean = (parts.part1 || '').normalize('NFC');
+  const part2Clean = (parts.part2 || '').normalize('NFC');
+  const normalizedViClean = parts.normalizedVi ? parts.normalizedVi.normalize('NFC') : undefined;
 
   if (sourceLang === 'ja') {
     const enMeta = getLanguageMetadata('en');
@@ -732,17 +743,17 @@ function buildResultObject(
         labelJa: viMeta.labelJa,
         labelVi: viMeta.labelVi,
         flag: viMeta.flag,
-        text: parts.part2,
+        text: part2Clean,
       },
       target2: {
         lang: 'en',
         labelJa: enMeta.labelJa,
         labelVi: enMeta.labelVi,
         flag: enMeta.flag,
-        text: parts.part1,
+        text: part1Clean,
         isPivotBridge: true,
       },
-      intermediateEnglish: parts.part1,
+      intermediateEnglish: part1Clean,
       durationMs,
       timestamp: Date.now(),
     };
@@ -759,19 +770,19 @@ function buildResultObject(
         labelJa: jaMeta.labelJa,
         labelVi: jaMeta.labelVi,
         flag: jaMeta.flag,
-        text: parts.part2,
+        text: part2Clean,
       },
       target2: {
         lang: 'en',
         labelJa: enMeta.labelJa,
         labelVi: enMeta.labelVi,
         flag: enMeta.flag,
-        text: parts.part1,
+        text: part1Clean,
         isPivotBridge: true,
       },
-      intermediateEnglish: parts.part1,
-      normalizedVi: parts.normalizedVi,
-      isTeencode: Boolean(parts.normalizedVi),
+      intermediateEnglish: part1Clean,
+      normalizedVi: normalizedViClean,
+      isTeencode: Boolean(normalizedViClean),
       durationMs,
       timestamp: Date.now(),
     };
@@ -788,14 +799,14 @@ function buildResultObject(
         labelJa: viMeta.labelJa,
         labelVi: viMeta.labelVi,
         flag: viMeta.flag,
-        text: parts.part1,
+        text: part1Clean,
       },
       target2: {
         lang: 'ja',
         labelJa: jaMeta.labelJa,
         labelVi: jaMeta.labelVi,
         flag: jaMeta.flag,
-        text: parts.part2,
+        text: part2Clean,
       },
       durationMs,
       timestamp: Date.now(),
